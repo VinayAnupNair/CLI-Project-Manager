@@ -32,11 +32,13 @@ def init_db():
                     """)
         
         conn.commit()
+def time_convert(time):
+    return time.split('T')[0] + ' ' + time.split('T')[1].split('.')[0]
 
 def create_project(name):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(f"INSERT INTO projects(name, created_at) VALUES(?, ?)",(name, datetime.now().isoformat()))
+        cursor.execute(f"INSERT INTO projects(name, created_at) VALUES(?, ?)",(name, time_convert(datetime.now().isoformat())))
         conn.commit()
 
 def list_projects():
@@ -44,3 +46,9 @@ def list_projects():
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM projects")
         return cursor.fetchall()
+
+def delete_project(name):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM projects WHERE name = ?",(name,))
+        conn.commit()
