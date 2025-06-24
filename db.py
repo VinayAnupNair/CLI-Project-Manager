@@ -1,6 +1,8 @@
 # sqlite logic
 import sqlite3
 from datetime import datetime
+import uuid
+import os
 
 DB_NAME = "project_manager.db"
 
@@ -12,28 +14,29 @@ def init_db():
         cursor = conn.cursor()
 
         cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS projects(
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL,
-                        created_at TEXT NOT NULL
-                    )
-                    """) 
+            CREATE TABLE IF NOT EXISTS projects(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                created_at TEXT NOT NULL
+            )
+        """)
 
         cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS tasks(
-                        id INTEGER PRIMARY KEY,
-                        project_id INTEGER NOT NULL,
-                        name TEXT NOT NULL,
-                        notes TEXT,
-                        is_complete INTEGER DEFAULT 0,
-                        due_date TEXT,
-                        status TEXT,
-                        created_at TEXT NOT NULL,
-                        FOREIGN KEY (project_id) REFERENCES projects(id)
-                    )                 
-                    """)
-        
+            CREATE TABLE IF NOT EXISTS tasks(
+                id INTEGER PRIMARY KEY,
+                project_id INTEGER NOT NULL,
+                name TEXT NOT NULL,
+                is_complete INTEGER DEFAULT 0,
+                due_date TEXT,
+                created_at TEXT NOT NULL,
+                status TEXT,
+                notes_id TEXT,
+                FOREIGN KEY (project_id) REFERENCES projects(id)
+            )
+        """)
+
         conn.commit()
+
 def time_convert(time):
     return time.split('T')[0] + ' ' + time.split('T')[1].split('.')[0]
 
@@ -60,12 +63,36 @@ def get_id(name):
         cursor.execute("SELECT id FROM projects WHERE name = ?", (name,))
         return cursor.fetchone()
     
-def add_task(project_id, name, notes=None, due_date=None):
+def add_task(project_id, name, due_date=None):
+    notes_id = str(uuid.uuid4())
+    status = None  # status is optional or can be updated later
+
+    notes_dir = "notes"
+    os.makedirs(notes_dir, exist_ok=True)
+    file_path = os.path.join(notes_dir, f"{notes_id}.txt")
+    with open(file_path, "w") as f:
+        f.write("")
+
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""INSERT INTO tasks(project_id, name, notes, is_complete, due_date, created_at) 
-                          VALUES(?, ?, ?, 0, ?, ?)""",
-                       (project_id, name, notes, due_date, time_convert(datetime.now().isoformat())))
+        cursor.execute("""
+            INSERT INTO tasks(project_id, name, is_complete, due_date, created_at, status, notes_id)
+            VALUES(?, ?, 0, ?, ?, ?, ?)""",
+            (project_id, name, due_date, time_convert(datetime.now().isoformat()), status, notes_id))
+        conn.commit()
+
+def delete_task(task_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT notes_id FROM tasks WHERE id = ?", (task_id,))
+        row = cursor.fetchone()
+        if row and row[0]:
+            try:
+                os.remove(f"notes/{row[0]}.txt")
+            except FileNotFoundError:
+                pass  # No file to delete
+
+        cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         conn.commit()
     
 def mark_task_complete(task_id):
@@ -80,18 +107,29 @@ def undo_task_complete(task_id):
         cursor.execute("UPDATE tasks SET is_complete = 0 WHERE id = ?", (task_id,))
         conn.commit()
 
-def get_task_id(task_name):
+def get_task_id(project_name, task_name):
     with get_connection() as conn:
+        pid = get_id(project_name)
         cursor = conn.cursor()
-        cursor.execute("SELECT id FROM tasks WHERE name = ?", (task_name,))
+        cursor.execute("SELECT id FROM tasks WHERE name = ? AND project_id = ?", (task_name,pid[0]))
         return cursor.fetchone()
 
 
 def list_task(project_id):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""SELECT id, name, is_complete, notes, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
+        cursor.execute("""SELECT id, name, is_complete, notes_id, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
         return cursor.fetchall()
+    
+def get_notes_id(task_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT notes_id FROM tasks WHERE id = ?", (task_id,))
+        row = cursor.fetchone()
+        return row[0] if row else None
+
+    
+
 
 
 

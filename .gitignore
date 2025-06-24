@@ -8,3 +8,8 @@ __pycache__/
 
 # SQLite
 *.db
+.notes/
+
+#notes
+notes/*
+!notes/.gitkeep

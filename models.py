@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+
 @dataclass
 class project:
     id : int
@@ -14,8 +15,8 @@ class task:
     id : int
     project_id : int
     name : str
-    notes : Optional[str]
-    satatus: str
+    notes_id : Optional[str]
+    status: str
     is_complete : bool
     notes : str
     due_date : Optional[str]
