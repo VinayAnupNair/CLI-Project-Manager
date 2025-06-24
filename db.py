@@ -68,16 +68,31 @@ def add_task(project_id, name, notes=None, due_date=None):
                        (project_id, name, notes, due_date, time_convert(datetime.now().isoformat())))
         conn.commit()
     
+def mark_task_complete(task_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE tasks SET is_complete = 1 WHERE id = ?", (task_id,))
+        conn.commit()
+
+def undo_task_complete(task_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE tasks SET is_complete = 0 WHERE id = ?", (task_id,))
+        conn.commit()
+
+def get_task_id(task_name):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM tasks WHERE name = ?", (task_name,))
+        return cursor.fetchone()
 
 
 def list_task(project_id):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""SELECT id, notes, name, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
+        cursor.execute("""SELECT id, name, is_complete, notes, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
         return cursor.fetchall()
 
-def complete_task():
-    pass
 
 
 

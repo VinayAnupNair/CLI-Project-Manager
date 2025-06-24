@@ -1,6 +1,6 @@
 # command definitions
 import click
-from db import create_project, list_projects, delete_project, get_id, list_task, add_task
+from db import create_project, list_projects, delete_project, get_id, list_task, add_task, get_task_id, mark_task_complete, undo_task_complete
 from utils import get_status
 
 @click.group()
@@ -46,9 +46,10 @@ def list_tasks(project_name):
         return
 
     click.echo(f"Tasks for '{project_name}':")
-    for tid, notes, name, status, due in tasks:
+    for tid, name, is_complete, notes, status, due in tasks:
         status = get_status(due)
-        click.echo(f"[{tid}] {name} - {status} - Due: {due or 'N/A'}")
+        done = "✅" if is_complete else "❌"
+        click.echo(f"[{tid}] {name} {done} - {status} - Due: {due or 'N/A'}")
 
 @cli.command()
 @click.argument("project_name")
@@ -62,3 +63,19 @@ def add_task_cmd(project_name, task_name, notes, due_date):
         return
     add_task(pid[0], task_name,notes,due_date)
     click.echo(f"Added task '{task_name}' to project '{project_name}'")
+
+@cli.command
+@click.argument('task_name')
+def complete_task(task_name):
+    tid = get_task_id(task_name)
+    mark_task_complete(tid[0])
+    click.echo(f"Task {task_name} marked as complete.")
+
+@cli.command
+@click.argument('task_name')
+def undo_complete_task(task_name):
+    tid = get_task_id(task_name)
+    undo_task_complete(tid[0])
+    click.echo(f"Task {task_name} marked as incomplete.")
+
+

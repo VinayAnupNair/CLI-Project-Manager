@@ -14,6 +14,8 @@ class task:
     id : int
     project_id : int
     name : str
+    notes : Optional[str]
+    satatus: str
     is_complete : bool
     notes : str
     due_date : Optional[str]
