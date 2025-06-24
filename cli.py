@@ -1,6 +1,6 @@
 # command definitions
 import click
-from db import create_project, list_projects, delete_project, get_id, list_task
+from db import create_project, list_projects, delete_project, get_id, list_task, add_task
 from utils import get_status
 
 @click.group()
@@ -49,3 +49,16 @@ def list_tasks(project_name):
     for tid, notes, name, status, due in tasks:
         status = get_status(due)
         click.echo(f"[{tid}] {name} - {status} - Due: {due or 'N/A'}")
+
+@cli.command()
+@click.argument("project_name")
+@click.argument("task_name")
+@click.option("--notes", default=None,help="These are the optional notes")
+@click.option("--due_date", default=None, help="This is an optional due date")
+def add_task_cmd(project_name, task_name, notes, due_date):
+    pid = get_id(project_name)
+    if not pid:
+        click.echo("project not found")
+        return
+    add_task(pid[0], task_name,notes,due_date)
+    click.echo(f"Added task '{task_name}' to project '{project_name}'")
