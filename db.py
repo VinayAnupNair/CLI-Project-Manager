@@ -23,9 +23,11 @@ def init_db():
                     CREATE TABLE IF NOT EXISTS tasks(
                         id INTEGER PRIMARY KEY,
                         project_id INTEGER NOT NULL,
-                        description TEXT NOT NULL,
+                        name TEXT NOT NULL,
+                        notes TEXT,
                         is_complete INTEGER DEFAULT 0,
                         due_date TEXT,
+                        status TEXT,
                         created_at TEXT NOT NULL,
                         FOREIGN KEY (project_id) REFERENCES projects(id)
                     )                 
@@ -38,7 +40,7 @@ def time_convert(time):
 def create_project(name):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute(f"INSERT INTO projects(name, created_at) VALUES(?, ?)",(name, time_convert(datetime.now().isoformat())))
+        cursor.execute("INSERT INTO projects(name, created_at) VALUES(?, ?)",(name, time_convert(datetime.now().isoformat())))
         conn.commit()
 
 def list_projects():
@@ -52,3 +54,31 @@ def delete_project(name):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM projects WHERE name = ?",(name,))
         conn.commit()
+def get_id(name):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM projects WHERE name = ?", (name,))
+        return cursor.fetchone()
+    
+def add_task(project_id, name, notes=None, due_date=None):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""INSERT INTO tasks(project_id, name, notes, is_complete, due_date, created_at) 
+                          VALUES(?, ?, ?, 0, ?, ?)""",
+                       (project_id, name, notes, due_date, time_convert(datetime.now().isoformat())))
+        conn.commit()
+    
+
+
+def list_task(project_id):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""SELECT id, notes, name, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
+        return cursor.fetchall()
+
+def complete_task():
+    pass
+
+
+
+

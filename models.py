@@ -13,7 +13,8 @@ class project:
 class task:
     id : int
     project_id : int
-    description : str
+    name : str
     is_complete : bool
+    notes : str
     due_date : Optional[str]
     created_at : str

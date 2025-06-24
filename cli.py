@@ -1,7 +1,7 @@
 # command definitions
 import click
-from db import create_project, list_projects, delete_project
-# local_time = current_time.split('T')[0] + ' ' + current_time.split('T')[1].split('.')[0]
+from db import create_project, list_projects, delete_project, get_id, list_task
+from utils import get_status
 
 @click.group()
 def cli():
@@ -32,3 +32,20 @@ def list_projects_cmd():
     click.echo("Project:")
     for pid, name, created in projects:
         click.echo(f"[{pid}\t{name}\t{created}]")
+
+@cli.command()
+@click.argument("project_name")
+def list_tasks(project_name):
+    pid = get_id(project_name)
+    if not pid:
+        click.echo("Project not found.")
+        return
+    tasks = list_task(pid[0])
+    if not tasks:
+        click.echo("No tasks found.")
+        return
+
+    click.echo(f"Tasks for '{project_name}':")
+    for tid, notes, name, status, due in tasks:
+        status = get_status(due)
+        click.echo(f"[{tid}] {name} - {status} - Due: {due or 'N/A'}")
