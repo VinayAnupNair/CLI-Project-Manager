@@ -10,7 +10,8 @@ from utils import get_status, open_task_note
 
 @click.group()
 def cli():
-    pass
+    print("Welcome to the Project Manager CLI!")
+    print("Type `--help` after any command to see options.")
 
 @cli.command()
 def test():
