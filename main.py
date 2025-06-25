@@ -1,8 +1,7 @@
 # entry point
-
-import click
 from cli import cli
 from db import init_db
+import sys
 
 def run_interactive():
     print("Welcome to the project manager, type 'quit' or 'exit' to exit the program")
@@ -18,4 +17,7 @@ def run_interactive():
 
 if __name__ == "__main__":
     init_db()
-    run_interactive()
+    if (len(sys.argv) == 1):
+        run_interactive()
+    else:
+        cli()
