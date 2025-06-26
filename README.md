@@ -41,20 +41,8 @@ pip install click
 ### 4. Run the CLI
 
 ```bash
-python main.py [COMMAND]
+python main.py
 ```
-
----
-
-## 📋 Commands
-
-### ✅ Test CLI
-
-```bash
-python main.py test
-```
-> Output: `Project manager working`
-
 ---
 
 ### 📁 Project Commands
@@ -62,19 +50,19 @@ python main.py test
 #### Create a new project
 
 ```bash
-python main.py new-project "ProjectName"
+pm >>> new-project "ProjectName"
 ```
 
 #### List all projects
 
 ```bash
-python main.py list-projects
+pm >>> list-projects
 ```
 
 #### Delete a project
 
 ```bash
-python main.py delete-project "ProjectName"
+pm >>> delete-project "ProjectName"
 ```
 
 ---
@@ -84,31 +72,31 @@ python main.py delete-project "ProjectName"
 #### Add a task
 
 ```bash
-python main.py add-task "ProjectName" "Task Name" --due_date YYYY-MM-DD --priority LOW|MEDIUM|HIGH
+pm >>> add-task "ProjectName" "Task Name" --due_date YYYY-MM-DD --priority LOW|MEDIUM|HIGH
 ```
 
 #### List tasks in a project
 
 ```bash
-python main.py list-tasks "ProjectName" --sort-by name|due_date|priority
+pm >>> list-tasks "ProjectName" --sort-by name|due_date|priority
 ```
 
 #### Mark a task as complete
 
 ```bash
-python main.py complete "ProjectName" "Task Name"
+pm >>> complete "ProjectName" "Task Name"
 ```
 
 #### Undo task completion
 
 ```bash
-python main.py undo-complete "ProjectName" "Task Name"
+pm >>> undo-complete "ProjectName" "Task Name"
 ```
 
 #### Delete a task
 
 ```bash
-python main.py delete-task "ProjectName" "Task Name"
+pm >>> delete-task "ProjectName" "Task Name"
 ```
 
 ---
@@ -118,7 +106,7 @@ python main.py delete-task "ProjectName" "Task Name"
 #### Edit task notes (in your system text editor)
 
 ```bash
-python main.py edit-notes "ProjectName" "Task Name"
+pm >>> edit-notes "ProjectName" "Task Name"
 ```
 
 ---
@@ -128,7 +116,7 @@ python main.py edit-notes "ProjectName" "Task Name"
 #### Search for tasks by keyword
 
 ```bash
-python main.py search-task "ProjectName" "keyword"
+pm >>> search-task "ProjectName" "keyword"
 ```
 
 ---
