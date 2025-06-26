@@ -4,7 +4,9 @@ from db import init_db
 import sys
 
 def run_interactive():
-    print("Welcome to the project manager, type 'quit' or 'exit' to exit the program")
+    print("Welcome to the Project Manager CLI!")
+    print("Type '--help' after any command to see options.")
+    print("Type 'quit' or 'exit' to exit the program.")
     while True:
         try:
             cmd = input("pm >>> ")
