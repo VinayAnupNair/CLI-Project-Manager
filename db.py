@@ -1,6 +1,6 @@
 # sqlite logic
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 import os
 
@@ -149,6 +149,18 @@ def get_notes_id(task_id):
         cursor.execute("SELECT notes_id FROM tasks WHERE id = ?", (task_id,))
         row = cursor.fetchone()
         return row[0] if row else None
+    
+def get_important_tasks():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        limit = (datetime.now()+ timedelta(2)).strftime("%Y-%m-%d") 
+        cursor.execute("""
+            SELECT tasks.name, tasks.due_date, projects.name
+            FROM tasks
+            INNER JOIN projects ON tasks.project_id = projects.id
+            WHERE tasks.is_complete = 0 AND tasks.due_date < ?
+        """, (limit,))
+        return cursor.fetchall()
 
     
 
