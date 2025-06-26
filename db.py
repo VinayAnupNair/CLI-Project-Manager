@@ -94,6 +94,14 @@ def delete_task(task_id):
 
         cursor.execute("DELETE FROM tasks WHERE id = ?", (task_id,))
         conn.commit()
+def search_tasks(project_id, keyword):
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("""
+            Select id, name, is_complete, status, due_date
+            FROM tasks
+            WHERE project_id = ? AND name LIKE ?""", (project_id, f"%{keyword}%"))
+        return cursor.fetchall()
     
 def mark_task_complete(task_id):
     with get_connection() as conn:

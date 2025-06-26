@@ -13,7 +13,7 @@ def run_interactive():
             if cmd:
                 cli.main(args=cmd.split(), standalone_mode=False)
         except Exception as e:
-            print("error occured : {e}")    
+            print(f"error occured : {e}")    
 
 if __name__ == "__main__":
     init_db()

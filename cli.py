@@ -4,7 +4,7 @@ from db import (
     create_project, list_projects, delete_project, get_id,
     list_task, add_task, get_task_id,
     mark_task_complete, undo_task_complete,
-    get_notes_id
+    get_notes_id, search_tasks
 )
 from utils import get_status, open_task_note
 
@@ -120,3 +120,21 @@ def edit_notes(project_name, task_name):
 
     open_task_note(notes_id)
     click.echo(f"Opened notes for task '{task_name}'.")
+
+@cli.command()
+@click.argument("project_name")
+@click.argument("keyword")
+def search_task(project_name, keyword):
+    pid = get_id(project_name)
+    if not pid:
+        click.echo("Project not found.")
+        return
+    results = search_tasks(pid[0], keyword)
+    if not results:
+        click.echo("No matching tasks found.")
+        return
+    for tid, name, is_complete, status, due in results:
+        done = "✅" if is_complete else "❌"
+        click.echo(f"[{tid}] {name} {done} - Status: {status} - Due: {due or 'N/A'}")
+
+
