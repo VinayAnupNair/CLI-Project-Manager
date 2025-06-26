@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime, timedelta
 import uuid
 import os
+from utils import time_convert
 
 DB_NAME = "project_manager.db"
 
@@ -38,8 +39,6 @@ def init_db():
 
         conn.commit()
 
-def time_convert(time):
-    return time.split('T')[0] + ' ' + time.split('T')[1].split('.')[0]
 
 def create_project(name):
     with get_connection() as conn:
@@ -47,7 +46,7 @@ def create_project(name):
         cursor.execute("INSERT INTO projects(name, created_at) VALUES(?, ?)",(name, time_convert(datetime.now().isoformat())))
         conn.commit()
 
-def list_projects():
+def projects_list():
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM projects")
@@ -64,7 +63,7 @@ def get_id(name):
         cursor.execute("SELECT id FROM projects WHERE name = ?", (name,))
         return cursor.fetchone()
     
-def add_task(project_id, name, due_date=None, priority = "MEDIUM"):
+def task_add(project_id, name, due_date=None, priority = "MEDIUM"):
     notes_id = str(uuid.uuid4())
     status = None  # status is optional or can be updated later
 

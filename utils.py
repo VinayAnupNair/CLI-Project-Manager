@@ -17,3 +17,6 @@ def get_status(due_date_str):
 def open_task_note(notes_id):
     file_path = f"notes/{notes_id}.txt"
     os.system(f"${{EDITOR:-vim}} {file_path}")
+
+def time_convert(time):
+    return time.split('T')[0] + ' ' + time.split('T')[1].split('.')[0]

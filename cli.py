@@ -1,8 +1,8 @@
 # command definitions
 import click
 from db import (
-    create_project, list_projects, delete_project, get_id,
-    list_task, add_task, get_task_id,
+    create_project, projects_list, delete_project, get_id,
+    list_task, task_add, get_task_id,
     mark_task_complete, undo_task_complete,
     get_notes_id, search_tasks, task_delete
 )
@@ -29,8 +29,8 @@ def remove_project(name):
     click.echo(f"Deleted Project: {name}")
 
 @cli.command()
-def list_projects_cmd():
-    projects = list_projects()
+def list_projects():
+    projects = projects_list()
     if not projects:
         click.echo("No projects currently")
         return
@@ -63,18 +63,18 @@ def list_tasks(project_name, sort_by):
 @click.argument("task_name")
 @click.option("--due_date", default=None, help="Optional due date in YYYY-MM-DD")
 @click.option("--priority", default="MEDIUM", help="Priority: LOW, MEDIUM, HIGH")
-def add_task_cmd(project_name, task_name, due_date, priority):
+def add_task(project_name, task_name, due_date, priority):
     pid = get_id(project_name)
     if not pid:
         click.echo("Project not found.")
         return
-    add_task(pid[0], task_name, due_date, priority)
+    task_add(pid[0], task_name, due_date, priority)
     click.echo(f"Added task '{task_name}' to project '{project_name}'. with priority {priority}.,")
 
 @cli.command()
 @click.argument('project_name')
 @click.argument('task_name')
-def complete_task(project_name, task_name):
+def complete(project_name, task_name):
     pid = get_id(project_name)
     if not pid:
         click.echo(f"Project '{project_name}' not found")
@@ -89,7 +89,7 @@ def complete_task(project_name, task_name):
 @cli.command()
 @click.argument('project_name')
 @click.argument('task_name')
-def undo_complete_task(project_name, task_name):
+def undo_complete(project_name, task_name):
     pid = get_id(project_name)
     if not pid:
         click.echo(f"Project '{project_name}' not found")
