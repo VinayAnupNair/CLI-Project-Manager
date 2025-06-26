@@ -4,7 +4,7 @@ from db import (
     create_project, list_projects, delete_project, get_id,
     list_task, add_task, get_task_id,
     mark_task_complete, undo_task_complete,
-    get_notes_id, search_tasks
+    get_notes_id, search_tasks, task_delete
 )
 from utils import get_status, open_task_note
 
@@ -137,5 +137,20 @@ def search_task(project_name, keyword):
     for tid, name, is_complete, status, due in results:
         done = "✅" if is_complete else "❌"
         click.echo(f"[{tid}] {name} {done} - Status: {status} - Due: {due or 'N/A'}")
+
+@cli.command()
+@click.argument("project_name")
+@click.argument("task_name")
+def delete_task(project_name, task_name):
+    pid = get_id(project_name)
+    if not pid:
+        click.echo(f"Project '{project_name}' not found")
+        return
+    tid = get_task_id(project_name, task_name)
+    if not tid:
+        click.echo(f"Task '{task_name}' not found in Project '{project_name}'")
+        return
+    task_delete(tid[0])
+    click.echo(f"Task '{task_name}' deleted")
 
 

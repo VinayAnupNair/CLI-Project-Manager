@@ -81,7 +81,7 @@ def add_task(project_id, name, due_date=None, priority = "MEDIUM"):
             (project_id, name, due_date, time_convert(datetime.now().isoformat()), status, notes_id, priority))
         conn.commit()
 
-def delete_task(task_id):
+def task_delete(task_id):
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT notes_id FROM tasks WHERE id = ?", (task_id,))
