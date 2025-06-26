@@ -17,6 +17,7 @@ class task:
     name : str
     notes_id : Optional[str]
     status: str
+    priority: str
     is_complete : bool
     notes : str
     due_date : Optional[str]

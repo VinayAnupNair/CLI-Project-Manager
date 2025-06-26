@@ -35,6 +35,7 @@ def init_db():
             )
         """)
 
+        add_priority_column()
         conn.commit()
 
 def time_convert(time):
@@ -63,7 +64,7 @@ def get_id(name):
         cursor.execute("SELECT id FROM projects WHERE name = ?", (name,))
         return cursor.fetchone()
     
-def add_task(project_id, name, due_date=None):
+def add_task(project_id, name, due_date=None, priority = "MEDIUM"):
     notes_id = str(uuid.uuid4())
     status = None  # status is optional or can be updated later
 
@@ -72,13 +73,12 @@ def add_task(project_id, name, due_date=None):
     file_path = os.path.join(notes_dir, f"{notes_id}.txt")
     with open(file_path, "w") as f:
         f.write("")
-
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            INSERT INTO tasks(project_id, name, is_complete, due_date, created_at, status, notes_id)
-            VALUES(?, ?, 0, ?, ?, ?, ?)""",
-            (project_id, name, due_date, time_convert(datetime.now().isoformat()), status, notes_id))
+            INSERT INTO tasks(project_id, name, is_complete, due_date, created_at, status, notes_id, priority)
+            VALUES(?, ?, 0, ?, ?, ?, ?, ?)""",
+            (project_id, name, due_date, time_convert(datetime.now().isoformat()), status, notes_id, priority))
         conn.commit()
 
 def delete_task(task_id):
@@ -103,6 +103,13 @@ def search_tasks(project_id, keyword):
             WHERE project_id = ? AND name LIKE ?""", (project_id, f"%{keyword}%"))
         return cursor.fetchall()
     
+def add_priority_column():
+    with get_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("ALTER TABLE tasks ADD COLUMN priority TEXT DEFAULT 'MEDIUM'")
+        conn.commit()
+
+    
 def mark_task_complete(task_id):
     with get_connection() as conn:
         cursor = conn.cursor()
@@ -126,7 +133,7 @@ def get_task_id(project_name, task_name):
 def list_task(project_id):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""SELECT id, name, is_complete, notes_id, status, due_date FROM tasks WHERE project_id = ?""", (project_id,))
+        cursor.execute("""SELECT id, name, is_complete, notes_id, status, due_date, priority FROM tasks WHERE project_id = ?""", (project_id,))
         return cursor.fetchall()
     
 def get_notes_id(task_id):

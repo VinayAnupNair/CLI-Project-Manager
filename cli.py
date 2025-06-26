@@ -52,23 +52,24 @@ def list_tasks(project_name):
         return
 
     click.echo(f"Tasks for '{project_name}':")
-    for tid, name, is_complete, notes_id, status, due in tasks:
+    for tid, name, is_complete, notes_id, status, due, priority in tasks:
         status = get_status(due)
         done = "✅" if is_complete else "❌"
         note_tag = "📝" if notes_id else ""
-        click.echo(f"[{tid}] {name} {done} {note_tag} - {status} - Due: {due or 'N/A'}")
+        click.echo(f"[{tid}] {name} {done} {note_tag} - {priority} - {status} - Due: {due or 'N/A'}")
 
 @cli.command()
 @click.argument("project_name")
 @click.argument("task_name")
 @click.option("--due_date", default=None, help="Optional due date in YYYY-MM-DD")
-def add_task_cmd(project_name, task_name, due_date):
+@click.option("--priority", default="MEDIUM", help="Priority: LOW, MEDIUM, HIGH")
+def add_task_cmd(project_name, task_name, due_date, priority):
     pid = get_id(project_name)
     if not pid:
         click.echo("Project not found.")
         return
-    add_task(pid[0], task_name, due_date)
-    click.echo(f"Added task '{task_name}' to project '{project_name}'.")
+    add_task(pid[0], task_name, due_date, priority)
+    click.echo(f"Added task '{task_name}' to project '{project_name}'. with priority {priority}.,")
 
 @cli.command()
 @click.argument('project_name')
