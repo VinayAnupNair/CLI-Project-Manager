@@ -1,7 +1,7 @@
 # command definitions
 import click
 from db import (
-    create_project, projects_list, delete_project, get_id,
+    create_project, projects_list, project_delete, get_id,
     list_task, task_add, get_task_id,
     mark_task_complete, undo_task_complete,
     get_notes_id, search_tasks, task_delete
@@ -24,8 +24,8 @@ def new_project(name):
 
 @cli.command()
 @click.argument("name")
-def remove_project(name):
-    delete_project(name)
+def delete_project(name):
+    project_delete(name)
     click.echo(f"Deleted Project: {name}")
 
 @cli.command()

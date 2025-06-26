@@ -52,7 +52,7 @@ def projects_list():
         cursor.execute("SELECT * FROM projects")
         return cursor.fetchall()
 
-def delete_project(name):
+def project_delete(name):
     with get_connection() as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM projects WHERE name = ?",(name,))
