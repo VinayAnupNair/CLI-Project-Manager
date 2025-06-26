@@ -41,12 +41,13 @@ def list_projects_cmd():
 
 @cli.command()
 @click.argument("project_name")
-def list_tasks(project_name):
+@click.option("--sort-by", default="due_date", help="Sort by: name, due_date, priority")
+def list_tasks(project_name, sort_by):
     pid = get_id(project_name)
     if not pid:
         click.echo("Project not found.")
         return
-    tasks = list_task(pid[0])
+    tasks = list_task(pid[0],sort_by)
     if not tasks:
         click.echo("No tasks found.")
         return

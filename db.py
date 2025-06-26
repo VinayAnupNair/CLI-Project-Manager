@@ -28,6 +28,7 @@ def init_db():
                 name TEXT NOT NULL,
                 is_complete INTEGER DEFAULT 0,
                 due_date TEXT,
+                priority TEXT,
                 created_at TEXT NOT NULL,
                 status TEXT,
                 notes_id TEXT,
@@ -35,7 +36,6 @@ def init_db():
             )
         """)
 
-        add_priority_column()
         conn.commit()
 
 def time_convert(time):
@@ -130,12 +130,19 @@ def get_task_id(project_name, task_name):
         return cursor.fetchone()
 
 
-def list_task(project_id):
+def list_task(project_id, sort_by="due_date"):
     with get_connection() as conn:
         cursor = conn.cursor()
-        cursor.execute("""SELECT id, name, is_complete, notes_id, status, due_date, priority FROM tasks WHERE project_id = ?""", (project_id,))
+        allowed = {"name", "due_date", "priority"}
+        if sort_by not in allowed:
+            sort_by = "due_date"
+        cursor.execute(f"""
+            SELECT id, name, is_complete, notes_id, status, due_date, priority
+            FROM tasks WHERE project_id = ?
+            ORDER BY {sort_by} ASC
+        """, (project_id,))
         return cursor.fetchall()
-    
+
 def get_notes_id(task_id):
     with get_connection() as conn:
         cursor = conn.cursor()
