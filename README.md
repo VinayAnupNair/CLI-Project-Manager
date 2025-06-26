@@ -164,9 +164,3 @@ project-manager-cli/
 
 ---
 
-## 🔒 Future Features (optional)
-
-- Notifications / Reminders  
-- Task tags or labels  
-- Project export/import  
-- Better note formatting (Markdown support)
